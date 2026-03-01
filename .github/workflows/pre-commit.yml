@@ -1,0 +1,22 @@
+name: pre-commit-hooks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+      - name: Linting
+        run: |
+          pip install pre-commit
+          pre-commit clean
+          pre-commit run --all-files --show-diff-on-failure

@@ -1,0 +1,78 @@
+[project]
+name = "ai-dio"
+description = "Discern AI audio from real audio"
+license = "MIT"
+readme = "README.md"
+requires-python = ">= 3.10"
+version = "0.0.1"   
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "librosa",
+    "pyside6",
+    "soundfile>=0.13.1",
+    "ffmpeg>=1.4",
+    "sounddevice>=0.5.3",
+    "pathlib>=1.0.1",
+    "pandas>=2.3.3",
+    "tqdm>=4.67.1",
+    "wandb>=0.23.1",
+    "pyyaml>=6.0.1",
+    "datasets>=2.19.0",
+    "pdoc>=16.0.0",
+]
+
+
+[dependency-groups]
+dev = [
+    "ipython>=8.37.0",
+    "pre-commit>=3.5.0",
+    "ruff>=0.14.8",
+    "ty>=0.0.9",
+    "pytest>=9.0.2",
+]
+
+[project.optional-dependencies]
+cpu = [
+  "torch>=2.9.1",
+  "torchaudio>=2.9.1",
+  "torchcodec",
+]
+cu128 = [
+  "torch>=2.9.1",
+  "torchaudio>=2.9.1",
+  "torchcodec>=0.9.1",
+]
+
+[tool.uv]
+conflicts = [
+  [
+    { extra = "cpu" },
+    { extra = "cu128" },
+  ],
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+torchaudio = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+torchcodec = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true

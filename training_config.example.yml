@@ -1,0 +1,121 @@
+features:
+  chunk_duration: 3.0
+  target_sr: 16000
+  win_ms: 25.0
+  hop_ms: 10.0
+  n_mels: 80
+
+manifest_build:
+  output: manifest.csv
+  seed: 1337
+  val_ratio: 0.1
+  dfadd_dir: data/raw/dfadd
+  dfadd_audio_dir: data/raw/dfadd/audio
+  mlaad_dir: data/raw/mlaad_tiny
+  ml_df_dir: data/raw/ml-df
+  in_the_wild_dir: data/raw/in_the_wild
+  in_the_wild_zip: data/raw/in_the_wild/release_in_the_wild.zip
+
+cache:
+  manifest: manifest.csv
+  output_dir: data/cache/mel_3s_16k
+  device: cpu
+  batch_size: 64
+  num_workers: 4
+  pin_memory: false
+  prefetch_factor: 2
+  dtype: float32
+  augment: true
+  augment_splits:
+    - train
+
+data:
+  manifest: manifest.csv
+  cache_dir: data/cache/mel_3s_16k
+  use_cache: true
+  use_cache_train: true
+  augment:
+    enabled: false
+    p_codec: 0.6
+    p_resample: 0.4
+    p_bandlimit: 0.5
+    p_compress: 0.4
+    p_reverb: 0.25
+    p_noise: 0.5
+    codec_types:
+      - mp3
+      - aac
+      - opus
+    codec_bitrate_kbps_min: 16
+    codec_bitrate_kbps_max: 96
+    resample_hz_min: 8000
+    resample_hz_max: 16000
+    bandlimit_hz_min: 3000
+    bandlimit_hz_max: 7600
+    compress_threshold_db: -20.0
+    compress_ratio: 4.0
+    compress_window_ms: 20.0
+    reverb_ms_min: 80.0
+    reverb_ms_max: 300.0
+    reverb_decay_min: 2.0
+    reverb_decay_max: 6.0
+    reverb_reflections_min: 3
+    reverb_reflections_max: 6
+    noise_snr_db_min: -5.0
+    noise_snr_db_max: 20.0
+    feature_mask:
+      enabled: true
+      time_masks: 8
+      time_width: 32
+      freq_masks: 6
+      freq_width: 20
+      noise_std: 0.03
+
+loader:
+  batch_size: 64
+  num_workers: 4
+  pin_memory: false
+  persistent_workers: false
+  allow_augment_workers: true
+  prefetch_factor: 2
+  drop_last: true
+  balanced_sampler: true
+
+train:
+  epochs: 10
+  device: auto
+  clip_grad_norm: 1.0
+  class_weights: balanced
+
+optim:
+  lr: 0.0003
+  weight_decay: 0.01
+
+metrics:
+  every: 1
+  threshold: auto
+
+eval:
+  checkpoint: checkpoints/model_best.pt
+  split: test
+  device: auto
+  batch_size: 64
+  num_workers: 0
+  use_cache: true
+
+predict:
+  wav: data/example.wav
+  checkpoint: checkpoints/model_best.pt
+  threshold: 0.5
+  device: auto
+  window_sec: null
+  stride_sec: null
+
+wandb:
+  enabled: false
+
+checkpoints:
+  dir: checkpoints
+  save_best: true
+  save_last: true
+  metric: val_loss
